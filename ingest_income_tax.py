@@ -12,7 +12,7 @@ from langchain.docstore.document import Document
 PDF_PATH = "data\IncomeTaxOrdinance.pdf"
 PERSIST_DIR = "./chroma_db"
 USE_CHROMA = True
-USE_OPENAI_EMBEDDINGS = False  # Change to True if using OpenAI
+USE_OPENAI_EMBEDDINGS = False 
 
 def load_pdf_text(pdf_path: str) -> List[Document]:
     reader = PdfReader(pdf_path)

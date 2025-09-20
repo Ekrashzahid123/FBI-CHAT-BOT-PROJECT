@@ -9,7 +9,7 @@ from langchain_community.vectorstores import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from fastapi.staticfiles import StaticFiles
 
-from langchain_core.language_models import FakeListLLM  # lightweight mock LLM
+from langchain_core.language_models import FakeListLLM  
 
 PERSIST_DIR = "./chroma_db"
 USE_OPENAI_EMBEDDINGS = False  # we’re using HuggingFace
