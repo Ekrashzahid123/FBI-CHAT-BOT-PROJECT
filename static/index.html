@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Income Tax Ordinance Chatbot</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      margin: 0; padding: 0;
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh;
+    }
+    #chat-container {
+      width: 420px;
+      height: 640px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    header {
+      background: linear-gradient(to right, #2575fc, #6a11cb);
+      color: white;
+      text-align: center;
+      padding: 12px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    #messages {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      background: #f8f9fa;
+    }
+    .msg {
+      max-width: 75%;
+      margin: 8px 0;
+      padding: 10px 14px;
+      border-radius: 16px;
+      line-height: 1.4;
+      font-size: 0.95em;
+      animation: fadeIn 0.3s ease-in;
+    }
+    .user {
+      background: #2575fc; color: white;
+      margin-left: auto; text-align: right;
+      border-bottom-right-radius: 4px;
+    }
+    .bot {
+      background: #e9ecef; color: #2c3e50;
+      margin-right: auto; text-align: left;
+      border-bottom-left-radius: 4px;
+    }
+    .timestamp {
+      font-size: 0.7em; color: #888;
+      margin-top: 2px; text-align: right;
+    }
+    #input-area {
+      display: flex; padding: 10px; background: #f1f1f1;
+    }
+    #question {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 0.9em;
+    }
+    button {
+      margin-left: 8px;
+      padding: 10px 14px;
+      background: linear-gradient(to right, #2575fc, #6a11cb);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { opacity: 0.9; }
+    .sources {
+      font-size: 0.8em; color: #555; margin-top: 6px;
+    }
+    footer {
+      background: #f1f1f1;
+      text-align: center;
+      font-size: 0.8em;
+      color: #444;
+      padding: 8px;
+      border-top: 1px solid #ddd;
+      font-weight: bold;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .typing {
+      font-style: italic; color: #888; margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <header>📘 Income Tax Chatbot</header>
+    <div id="messages"></div>
+    <div id="input-area">
+      <input type="text" id="question" placeholder="Ask your question..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+    <footer>
+      <span>Developed by <b>Ekrash Zahid</b> | AI Engineer | © Ekrash Zahid</span>
+    </footer>
+  </div>
+
+  <script>
+    function getTimestamp() {
+      const now = new Date();
+      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById("question");
+      const question = input.value.trim();
+      if (!question) return;
+
+      const messagesDiv = document.getElementById("messages");
+      messagesDiv.innerHTML += `<div class="msg user">${question}<div class="timestamp">${getTimestamp()}</div></div>`;
+      input.value = "";
+
+      const typingId = "typing-" + Date.now();
+      messagesDiv.innerHTML += `<div class="typing" id="${typingId}">Bot is typing...</div>`;
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+      try {
+        const res = await fetch("/query", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: question, top_k: 3 })
+        });
+        const data = await res.json();
+
+        document.getElementById(typingId).remove();
+
+        let sourcesHtml = "";
+        if (data.sources && data.sources.length > 0) {
+          sourcesHtml = "<div class='sources'><b>Sources:</b><ul>";
+          data.sources.forEach(s => {
+            sourcesHtml += `<li>📄 Page ${s.page}: ${s.snippet.substring(0, 100)}...</li>`;
+          });
+          sourcesHtml += "</ul></div>";
+        }
+
+        messagesDiv.innerHTML += `<div class="msg bot">${data.answer}${sourcesHtml}<div class="timestamp">${getTimestamp()}</div></div>`;
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      } catch (err) {
+        document.getElementById(typingId).remove();
+        messagesDiv.innerHTML += `<div class="msg bot">❌ Error: ${err.message}<div class="timestamp">${getTimestamp()}</div></div>`;
+      }
+    }
+
+    document.getElementById("question").addEventListener("keyup", function(event) {
+      if (event.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>
