@@ -19,7 +19,7 @@ app = FastAPI(title="Income Tax RAG Chatbot")
 
 class QueryRequest(BaseModel):
     question: str
-    top_k: Optional[int] = 5
+    top_k: Optional[int] = 10
 
 class SourceItem(BaseModel):
     page: int

@@ -7,17 +7,46 @@
     body {
       font-family: 'Segoe UI', Tahoma, sans-serif;
       background: linear-gradient(to right, #6a11cb, #2575fc);
-      margin: 0; padding: 0;
-      display: flex; justify-content: center; align-items: center;
+      margin: 0;
+      display: flex;
       height: 100vh;
     }
+    /* Sidebar */
+    #sidebar {
+      width: 220px;
+      background: #2c3e50;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+    }
+    #sidebar h2 {
+      font-size: 1em;
+      margin: 0 0 15px 0;
+      text-align: center;
+      color: #ecf0f1;
+    }
+    .sidebar-btn {
+      padding: 10px;
+      margin: 6px 0;
+      background: #34495e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      text-align: left;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .sidebar-btn:hover { background: #1abc9c; }
     #chat-container {
-      width: 420px;
-      height: 640px;
+      flex: 1;
+      max-width: 600px;
       background: #fff;
       border-radius: 14px;
       box-shadow: 0 8px 18px rgba(0,0,0,0.2);
-      display: flex; flex-direction: column;
+      display: flex;
+      flex-direction: column;
+      margin: auto;
       overflow: hidden;
     }
     header {
@@ -101,6 +130,15 @@
   </style>
 </head>
 <body>
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <h2>📂 Menu</h2>
+    <button class="sidebar-btn" onclick="newChat()">📝 New Chat</button>
+    <button class="sidebar-btn" onclick="shareChat()">🔗 Share</button>
+    <button class="sidebar-btn" onclick="about()">ℹ️ About</button>
+  </div>
+
+  <!-- Chatbox -->
   <div id="chat-container">
     <header>📘 Income Tax Chatbot</header>
     <div id="messages"></div>
@@ -162,6 +200,19 @@
     document.getElementById("question").addEventListener("keyup", function(event) {
       if (event.key === "Enter") sendMessage();
     });
+
+    // Sidebar actions
+    function newChat() {
+      document.getElementById("messages").innerHTML = "";
+    }
+    function shareChat() {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url);
+      alert("🔗 Chat link copied to clipboard:\n" + url);
+    }
+    function about() {
+      alert("📘 Income Tax Chatbot\nDeveloped by Ekrash Zahid | AI Engineer");
+    }
   </script>
 </body>
 </html>
